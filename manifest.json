@@ -2,85 +2,62 @@
     "name": "ЦенаЗа1 — Калькулятор цены за единицу",
     "short_name": "ЦенаЗа1",
     "description": "Сравнивайте цены товаров за единицу измерения и находите лучшие предложения",
-    "start_url": "/",
+    "start_url": "/price/",
+    "scope": "/price/",
     "display": "standalone",
     "background_color": "#0a0a0f",
     "theme_color": "#0a0a0f",
     "orientation": "portrait",
-    "scope": "/",
     "lang": "ru",
     "categories": ["shopping", "utilities", "finance"],
     "icons": [
         {
-            "src": "icons/icon-72.png",
+            "src": "./icons/icon-72.png",
             "sizes": "72x72",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-96.png",
+            "src": "./icons/icon-96.png",
             "sizes": "96x96",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-128.png",
+            "src": "./icons/icon-128.png",
             "sizes": "128x128",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-144.png",
+            "src": "./icons/icon-144.png",
             "sizes": "144x144",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-152.png",
+            "src": "./icons/icon-152.png",
             "sizes": "152x152",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-192.png",
+            "src": "./icons/icon-192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-384.png",
+            "src": "./icons/icon-384.png",
             "sizes": "384x384",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-512.png",
+            "src": "./icons/icon-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"
-        }
-    ],
-    "screenshots": [
-        {
-            "src": "screenshots/mobile.png",
-            "sizes": "390x844",
-            "type": "image/png",
-            "form_factor": "narrow",
-            "label": "Главный экран приложения"
-        }
-    ],
-    "shortcuts": [
-        {
-            "name": "Добавить товар",
-            "short_name": "Добавить",
-            "description": "Быстро добавить новый товар для сравнения",
-            "url": "/?action=add",
-            "icons": [
-                {
-                    "src": "icons/shortcut-add.png",
-                    "sizes": "96x96"
-                }
-            ]
         }
     ]
 }

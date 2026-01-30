@@ -1,11 +1,10 @@
-const CACHE_NAME = 'price-calc-v1';
+const CACHE_NAME = 'price-calc-v2';
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/icons/icon-192.png',
-    '/icons/icon-512.png',
-    'https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700&family=Manrope:wght@400;500;600&display=swap'
+    '/price/',
+    '/price/index.html',
+    '/price/manifest.json',
+    '/price/icons/icon-192.png',
+    '/price/icons/icon-512.png'
 ];
 
 // Install event - cache assets
@@ -37,26 +36,21 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests
     if (event.request.method !== 'GET') return;
 
     event.respondWith(
         caches.match(event.request)
             .then((cachedResponse) => {
                 if (cachedResponse) {
-                    // Return cached version
                     return cachedResponse;
                 }
 
-                // Fetch from network
                 return fetch(event.request)
                     .then((response) => {
-                        // Don't cache if not a valid response
                         if (!response || response.status !== 200 || response.type !== 'basic') {
                             return response;
                         }
 
-                        // Clone and cache the response
                         const responseToCache = response.clone();
                         caches.open(CACHE_NAME)
                             .then((cache) => {
@@ -66,16 +60,14 @@ self.addEventListener('fetch', (event) => {
                         return response;
                     })
                     .catch(() => {
-                        // Offline fallback for HTML pages
                         if (event.request.headers.get('accept').includes('text/html')) {
-                            return caches.match('/index.html');
+                            return caches.match('/price/index.html');
                         }
                     });
             })
     );
 });
 
-// Handle messages from the main thread
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
