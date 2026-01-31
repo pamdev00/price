@@ -1,4 +1,5 @@
 import './style.css'
+import { formatPrice, escapeHtml } from './utils'
 
 // Types
 interface Product {
@@ -337,18 +338,6 @@ function saveProducts(): void {
   localStorage.setItem('products', JSON.stringify(products))
 }
 
-function formatPrice(price: number): string {
-  if (price >= 1000) {
-    return price.toLocaleString('ru-RU', { maximumFractionDigits: 0 })
-  } else if (price >= 100) {
-    return price.toLocaleString('ru-RU', { maximumFractionDigits: 1 })
-  } else if (price >= 1) {
-    return price.toLocaleString('ru-RU', { maximumFractionDigits: 2 })
-  } else {
-    return price.toLocaleString('ru-RU', { maximumFractionDigits: 3 })
-  }
-}
-
 function renderProducts(): void {
   if (products.length === 0) {
     resultsSection.style.display = 'none'
@@ -432,12 +421,6 @@ function renderProducts(): void {
   initSwipeHandlers()
 }
 
-function escapeHtml(text: string): string {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
-}
-
 // Swipe to delete functionality
 function initSwipeHandlers(): void {
   const cards = document.querySelectorAll<HTMLDivElement>('.product-card')
@@ -450,7 +433,7 @@ function initSwipeHandlers(): void {
 
     card.addEventListener('touchstart', (e) => {
       // Don't start swipe if touching delete button
-      if (e.target.closest('.delete-btn')) return
+      if ((e.target as HTMLElement)?.closest('.delete-btn')) return
 
       startX = e.touches[0].clientX
       isDragging = true
@@ -585,7 +568,6 @@ renderProducts()
 
 // History Management
 let savedSessions: Session[] = JSON.parse(localStorage.getItem('savedSessions') || '[]')
-const historySection = document.getElementById('historySection') as HTMLDivElement
 const historyList = document.getElementById('historyList') as HTMLDivElement
 const saveSessionBtn = document.getElementById('saveSessionBtn') as HTMLButtonElement
 const saveModal = document.getElementById('saveModal') as HTMLDivElement
@@ -609,7 +591,7 @@ function renderHistory(): void {
         minute: '2-digit'
       })
 
-      const bestPrice = session.products.reduce(
+      const bestPrice = session.products.reduce<Product | null>(
         (best, p) => (p.pricePerUnit < (best?.pricePerUnit ?? Infinity) ? p : best),
         null
       )

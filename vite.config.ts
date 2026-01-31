@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
@@ -5,9 +6,9 @@ export default defineConfig({
   base: '/price-1/',
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',
     include: ['src/**/*.test.ts'],
-    setupFiles: ['./src/test/setup.ts']
+    setupFiles: ['./src/test/setup.ts'],
   },
   plugins: [
     VitePWA({
