@@ -7,6 +7,6 @@ afterEach(() => {
   // Создаём новый window для изоляции тестов
   window = new GlobalWindow()
   global.window = window as any
-  global.document = window.document
-  global.navigator = window.navigator
+  global.document = window.document as any
+  global.navigator = window.navigator as any
 })
