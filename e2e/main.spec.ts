@@ -204,3 +204,132 @@ test.describe('Переключение темы', () => {
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
   })
 })
+
+test.describe('Хранилище — переполнение localStorage', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/')
+    await page.evaluate(() => localStorage.clear())
+    await page.reload()
+  })
+
+  test('должен показывать ошибку при переполнении localStorage при добавлении товара', async ({ page }) => {
+    // Симулируем переполнение localStorage
+    await page.evaluate(() => {
+      const originalSetItem = localStorage.setItem
+      localStorage.setItem = (key: string, value: string) => {
+        if (key === 'products') {
+          throw new Error('QuotaExceededError')
+        }
+        return originalSetItem.call(localStorage, key, value)
+      }
+    })
+
+    // Пытаемся добавить товар
+    await page.fill('#productName', 'Товар')
+    await page.fill('#price', '100')
+    await page.fill('#quantity', '100')
+    await page.click('#addProduct')
+
+    // Должен появиться toast с ошибкой
+    await expect(page.locator('.toast')).toBeVisible()
+    await expect(page.locator('.toast')).toContainText('Недостаточно места в хранилище')
+  })
+
+  test('должен удалять старые сессии при переполнении localStorage', async ({ page }) => {
+    // Добавляем товар для сохранения
+    await page.fill('#productName', 'Товар')
+    await page.fill('#price', '100')
+    await page.fill('#quantity', '100')
+    await page.click('#addProduct')
+
+    // Создаём 30 сохранённых сессий
+    await page.evaluate(() => {
+      const sessions = []
+      for (let i = 0; i < 30; i++) {
+        sessions.push({
+          name: `Сессия ${i}`,
+          products: [{
+            id: Date.now() + i,
+            name: `Товар ${i}`,
+            originalPrice: 100 + i,
+            originalQuantity: 100,
+            unit: 'г',
+            largeUnit: 'кг',
+            factor: 1000,
+            pricePerUnit: 1,
+            pricePerLarge: 1000,
+            addedAt: Date.now() + i,
+          }],
+          savedAt: Date.now() + i,
+        })
+      }
+      localStorage.setItem('savedSessions', JSON.stringify(sessions))
+    })
+
+    await page.reload()
+
+    // Симулируем переполнение при попытке сохранить
+    let callCount = 0
+    await page.evaluate(() => {
+      const originalSetItem = localStorage.setItem
+      ;(window as any).__callCount = 0
+      localStorage.setItem = (key: string, value: string) => {
+        if (key === 'savedSessions') {
+          ;(window as any).__callCount++
+          if ((window as any).__callCount === 1) {
+            throw new Error('QuotaExceededError')
+          }
+        }
+        return originalSetItem.call(localStorage, key, value)
+      }
+    })
+
+    // Пытаемся сохранить новую сессию
+    await page.click('#saveSessionBtn')
+    await page.fill('#sessionNameInput', 'Новая сессия')
+    await page.click('#modalConfirm')
+
+    // Должен появиться confirm modal
+    await expect(page.locator('#confirmModal')).toBeVisible()
+    await expect(page.locator('#confirmModal')).toContainText('Хранилище заполнено')
+    await expect(page.locator('#confirmModal')).toContainText('удалено')
+  })
+
+  test('должен автоматически сохранять после удаления старых сессий', async ({ page }) => {
+    // Добавляем товар
+    await page.fill('#productName', 'Товар для теста')
+    await page.fill('#price', '100')
+    await page.fill('#quantity', '100')
+    await page.click('#addProduct')
+
+    // Симулируем переполнение с успешной повторной попыткой
+    await page.evaluate(() => {
+      const originalSetItem = localStorage.setItem
+      ;(window as any).__callCount = 0
+      localStorage.setItem = (key: string, value: string) => {
+        if (key === 'savedSessions') {
+          ;(window as any).__callCount++
+          if ((window as any).__callCount === 1) {
+            throw new Error('QuotaExceededError')
+          }
+        }
+        return originalSetItem.call(localStorage, key, value)
+      }
+    })
+
+    await page.click('#saveSessionBtn')
+    await page.fill('#sessionNameInput', 'Тест переполнения')
+    await page.click('#modalConfirm')
+
+    // Закрываем confirm modal
+    await page.click('#confirmCancel')
+
+    // Сессия должна быть сохранена (несмотря на первичную ошибку)
+    const sessionCount = await page.evaluate(() => {
+      const sessions = JSON.parse(localStorage.getItem('savedSessions') || '[]')
+      return sessions.length
+    })
+
+    expect(sessionCount).toBeGreaterThan(0)
+  })
+})

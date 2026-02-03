@@ -418,7 +418,11 @@ function clearAll(): void {
 clearAllBtn.addEventListener('click', clearAll)
 
 function saveProducts(): void {
-  localStorage.setItem('products', JSON.stringify(products))
+  try {
+    localStorage.setItem('products', JSON.stringify(products))
+  } catch (e) {
+    showInfoToast('Недостаточно места в хранилище. Попробуйте удалить старые сравнения.')
+  }
 }
 
 function renderProducts(): void {
@@ -856,17 +860,50 @@ function saveSession(): void {
 
   savedSessions.unshift(session)
 
-  // Keep only last 20 sessions
-  if (savedSessions.length > 20) {
-    savedSessions = savedSessions.slice(0, 20)
+  // Keep only last 200 sessions
+  if (savedSessions.length > 200) {
+    savedSessions = savedSessions.slice(0, 200)
   }
 
-  localStorage.setItem('savedSessions', JSON.stringify(savedSessions))
-  renderHistory()
-  hideSaveModal()
+  // Проверяем, хватает ли места в localStorage
+  try {
+    const data = JSON.stringify(savedSessions)
+    localStorage.setItem('savedSessions', data)
+    renderHistory()
+    hideSaveModal()
 
-  if (navigator.vibrate) {
-    navigator.vibrate(10)
+    if (navigator.vibrate) {
+      navigator.vibrate(10)
+    }
+  } catch (e) {
+    // Если места нет - удаляем самые старые сессии
+    const sessionsToRemove = Math.min(20, savedSessions.length - 1)
+    savedSessions.splice(savedSessions.length - sessionsToRemove, sessionsToRemove)
+
+    try {
+      localStorage.setItem('savedSessions', JSON.stringify(savedSessions))
+
+      // Показываем сообщение о том, что старые сессии были удалены
+      showConfirm(
+        'Хранилище заполнено',
+        `Для сохранения нового сравнения было удалено ${sessionsToRemove} старых. Хотите открыть историю и удалить больше?`,
+        () => {
+          // Скролл к истории
+          document.querySelector('.history-section')?.scrollIntoView({ behavior: 'smooth' })
+        },
+        'Открыть историю',
+        false
+      )
+    } catch (e2) {
+      // Если всё ещё не хватает места - удаляем ещё больше
+      savedSessions.splice(0, savedSessions.length - 50)
+      localStorage.setItem('savedSessions', JSON.stringify(savedSessions))
+
+      showInfoToast('Недостаточно места. Удалено много старых сессий.')
+    }
+
+    renderHistory()
+    hideSaveModal()
   }
 }
 
