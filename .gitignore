@@ -5,6 +5,7 @@ node_modules
 dist
 dist-ssr
 
+playwright-report/
 # Local env files
 .env
 .env.local
@@ -35,3 +36,4 @@ lerna-debug.log*
 .playwright-mcp
 .agents
 dev-dist/
+test-results
