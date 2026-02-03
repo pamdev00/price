@@ -34,3 +34,4 @@ lerna-debug.log*
 .claude
 .playwright-mcp
 .agents
+dev-dist/

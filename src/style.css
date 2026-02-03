@@ -1128,6 +1128,37 @@ header {
     transform: scale(0.95);
 }
 
+/* PWA Update Toast */
+.toast-pwa {
+    border-color: var(--accent-primary);
+    background: rgba(99, 102, 241, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.toast-update {
+    background: var(--accent-glow);
+    border: 1px solid var(--accent-primary);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.toast-update:hover {
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.toast-update:active {
+    transform: scale(0.95);
+}
+
 /* Error Toast Styles */
 .toast-error {
     border-color: var(--danger);
