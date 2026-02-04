@@ -1,0 +1,10 @@
+node_modules
+dist
+dev-dist
+*.lock
+test-results
+playwright-report
+.playwright-mcp
+coverage
+package-lock.json
+.claude

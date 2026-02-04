@@ -11,7 +11,12 @@
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -29,12 +34,22 @@
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@types/node": "^25.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
     "@vitest/ui": "^4.0.18",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vitest": "^0.5.4",
+    "globals": "^17.3.0",
     "happy-dom": "^20.4.0",
     "jsdom": "^27.0.1",
+    "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "vite": "^6.4.1",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "@vkontakte/vk-bridge": "^2.15.11"
   }
 }

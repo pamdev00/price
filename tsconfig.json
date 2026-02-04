@@ -24,7 +24,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["vite/client"]
+    "types": ["vite/client", "@types/node"]
   },
-  "include": ["src"]
+  "include": ["src", "e2e", "*.config.ts"]
 }

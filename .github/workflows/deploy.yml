@@ -20,8 +20,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps
+      - run: npm run lint
+      - run: npm run format
+      - run: npm run typecheck
       - run: npm run test:run
+      - run: npx playwright install --with-deps
       - run: npm run test:e2e
       - run: npm run build
       - uses: actions/configure-pages@v4
