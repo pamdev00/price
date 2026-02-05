@@ -289,6 +289,48 @@
       </div>
     </div>
 
+    <!-- Edit Product Modal -->
+    <div class="modal-overlay" id="editModal">
+      <div class="modal">
+        <div class="modal-title">Редактирование товара</div>
+        <input type="text" class="modal-input" id="editProductName" placeholder="Название товара" />
+        <div class="edit-inputs-row">
+          <div class="edit-input-group">
+            <label class="edit-label">Цена (₽)</label>
+            <input
+              type="number"
+              class="modal-input"
+              id="editPrice"
+              placeholder="150"
+              inputmode="decimal"
+            />
+          </div>
+          <div class="edit-input-group">
+            <label class="edit-label">Количество</label>
+            <input
+              type="number"
+              class="modal-input"
+              id="editQuantity"
+              placeholder="1000"
+              inputmode="decimal"
+            />
+          </div>
+        </div>
+        <label class="edit-label">Единица измерения</label>
+        <div class="unit-selector edit-unit-selector">
+          <button class="unit-btn" data-unit="г" data-large="кг" data-factor="1000">граммы</button>
+          <button class="unit-btn" data-unit="мл" data-large="л" data-factor="1000">мл</button>
+          <button class="unit-btn" data-unit="шт" data-large="100 шт" data-factor="100">
+            штуки
+          </button>
+        </div>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel" id="editCancel">Отмена</button>
+          <button class="modal-btn confirm" id="editSave">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 

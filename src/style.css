@@ -1022,6 +1022,63 @@ header {
   border-color: rgba(220, 38, 38, 0.4);
 }
 
+/* Edit Modal */
+.edit-info {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.edit-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.edit-unit {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.edit-inputs-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.edit-input-group {
+  flex: 1;
+}
+
+.edit-input-group label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* Скрываем стрелочки в input type="number" в модалке редактирования */
+.edit-inputs-row input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.edit-inputs-row input[type="number"]::-webkit-outer-spin-button,
+.edit-inputs-row input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Edit Unit Selector */
+.edit-unit-selector {
+  margin-bottom: 16px;
+}
+
 /* Toast / Snackbar */
 .toast-container {
   position: fixed;

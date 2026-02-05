@@ -206,7 +206,6 @@ test.describe("Переключение темы", () => {
   });
 
   test("должен переключать светлую тему", async ({ page }) => {
-
     await page.click('.theme-btn[data-theme="light"]');
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   });
@@ -774,8 +773,8 @@ test.describe("Tutorial — Инструкция для пользователя
   test("должен закрываться на последнем слайде по кнопке Начать работу", async ({ page }) => {
     await page.reload();
 
-    // Переходим на последний слайд (5 кликов)
-    for (let i = 0; i < 4; i++) {
+    // Переходим на последний слайд (7 кликов)
+    for (let i = 0; i < 6; i++) {
       await page.click(".tutorial-next");
       await page.waitForTimeout(100);
     }
@@ -795,7 +794,7 @@ test.describe("Tutorial — Инструкция для пользователя
 
     // Проверяем количество точек
     const dots = page.locator(".tutorial-dot");
-    await expect(dots).toHaveCount(5);
+    await expect(dots).toHaveCount(7);
 
     // Первая точка должна быть активна
     await expect(dots.nth(0)).toHaveClass(/active/);

@@ -1,37 +1,49 @@
-import { TutorialSlide, STORAGE_KEYS } from '../constants';
+import { TutorialSlide, STORAGE_KEYS } from "../constants";
 
 // Массив слайдов инструкции
 const TUTORIAL_SLIDES: TutorialSlide[] = [
   {
     id: 1,
-    title: 'Добро пожаловать! 👋',
-    text: 'ЦенаЗа1 поможет вам сравнить цены и найти самый выгодный товар.',
-    emoji: '👋'
+    title: "Добро пожаловать! 👋",
+    text: "ЦенаЗа1 поможет вам сравнить цены и найти самый выгодный товар.",
+    emoji: "👋",
   },
   {
     id: 2,
-    title: 'Добавьте первый товар',
-    text: 'Введите <strong>название</strong>, <strong>цену</strong> и <strong>количество</strong> товара. Например: «Молоко 100 ₽ за 1000 г».',
-    emoji: '📝'
+    title: "Добавьте первый товар",
+    text: "Введите <strong>название</strong>, <strong>цену</strong> и <strong>количество</strong> товара. Например: «Молоко 100 ₽ за 1000 г».",
+    emoji: "📝",
   },
   {
     id: 3,
-    title: 'Выберите единицу измерения',
-    text: 'Нажмите на кнопку: <strong>граммы</strong>, <strong>миллилитры</strong> или <strong>штуки</strong>. Приложение само рассчитает цену за единицу.',
-    emoji: '⚖️'
+    title: "Выберите единицу измерения",
+    text: "Нажмите на кнопку: <strong>граммы</strong>, <strong>миллилитры</strong> или <strong>штуки</strong>. Приложение само рассчитает цену за единицу.",
+    emoji: "⚖️",
   },
   {
     id: 4,
-    title: 'Сравните и выберите лучшее',
-    text: 'Добавьте несколько товаров. Самый выгодный будет отмечен значком <strong>🏆 Лучшая цена</strong>.',
-    emoji: '🏆'
+    title: "Сравните и выберите лучшее",
+    text: "Добавьте несколько товаров. Самый выгодный будет отмечен значком <strong>🏆 Лучшая цена</strong>.",
+    emoji: "🏆",
   },
   {
     id: 5,
-    title: 'Готово к использованию!',
-    text: 'Если нужна помощь — нажмите на <strong>?</strong> в верхнем правом углу. Приятных покупок! 🛒',
-    emoji: '🎉'
-  }
+    title: "Автозаполнение",
+    text: "При повторном вводе названия <strong>приложение предложит варианты</strong>. Введите 2-3 буквы и выберите из списка. Единица измерения подставится автоматически.",
+    emoji: "⚡",
+  },
+  {
+    id: 6,
+    title: "Редактирование товара",
+    text: "Нажмите на <strong>карточку товара</strong>, чтобы изменить название, цену или количество. Также можно переключить единицу измерения.",
+    emoji: "✏️",
+  },
+  {
+    id: 7,
+    title: "Готово к использованию!",
+    text: "Если нужна помощь — нажмите на <strong>?</strong> в верхнем правом углу. Приятных покупок! 🛒",
+    emoji: "🎉",
+  },
 ];
 
 export class TutorialManager {
@@ -70,8 +82,8 @@ export class TutorialManager {
     }
 
     // Overlay
-    this.modal = document.createElement('div');
-    this.modal.className = 'modal-overlay tutorial-modal show';
+    this.modal = document.createElement("div");
+    this.modal.className = "modal-overlay tutorial-modal show";
     this.modal.innerHTML = `
       <div class="modal tutorial-content">
         <button class="tutorial-close" aria-label="Закрыть">
@@ -101,28 +113,36 @@ export class TutorialManager {
   }
 
   // Рендер текущего слайда с анимацией
-  private renderSlide(direction: 'next' | 'prev' | 'none' = 'none'): void {
+  private renderSlide(direction: "next" | "prev" | "none" = "none"): void {
     if (!this.modal) return;
 
     const slide = this.slides[this.currentSlide];
-    const container = this.modal.querySelector('.tutorial-slide-container') as HTMLElement;
+    const container = this.modal.querySelector(".tutorial-slide-container") as HTMLElement;
 
     if (!container) return;
 
     // Если анимации отключены (для тестов) - рендерим сразу
-    if (this.animationsDisabled || direction === 'none') {
+    if (this.animationsDisabled || direction === "none") {
       container.innerHTML = `
-        ${slide.emoji ? `<div class="tutorial-emoji">${slide.emoji}</div>` : ''}
+        ${slide.emoji ? `<div class="tutorial-emoji">${slide.emoji}</div>` : ""}
         <h2 class="tutorial-title">${slide.title}</h2>
         <p class="tutorial-text">${slide.text}</p>
-        ${slide.imageSrc ? `<img src="${slide.imageSrc}" alt="${slide.title}" class="tutorial-image">` : ''}
+        ${slide.imageSrc ? `<img src="${slide.imageSrc}" alt="${slide.title}" class="tutorial-image">` : ""}
       `;
     } else {
       // Определяем классы анимации
-      const exitClass = direction === 'next' ? 'tutorial-slide-exit' :
-                        direction === 'prev' ? 'tutorial-slide-exit-back' : '';
-      const enterClass = direction === 'next' ? 'tutorial-slide-enter' :
-                         direction === 'prev' ? 'tutorial-slide-enter-back' : '';
+      const exitClass =
+        direction === "next"
+          ? "tutorial-slide-exit"
+          : direction === "prev"
+            ? "tutorial-slide-exit-back"
+            : "";
+      const enterClass =
+        direction === "next"
+          ? "tutorial-slide-enter"
+          : direction === "prev"
+            ? "tutorial-slide-enter-back"
+            : "";
 
       // Анимированный переход
       // Добавляем класс выхода
@@ -134,10 +154,10 @@ export class TutorialManager {
         if (!this.modal || !container.isConnected) return;
 
         container.innerHTML = `
-          ${slide.emoji ? `<div class="tutorial-emoji">${slide.emoji}</div>` : ''}
+          ${slide.emoji ? `<div class="tutorial-emoji">${slide.emoji}</div>` : ""}
           <h2 class="tutorial-title">${slide.title}</h2>
           <p class="tutorial-text">${slide.text}</p>
-          ${slide.imageSrc ? `<img src="${slide.imageSrc}" alt="${slide.title}" class="tutorial-image">` : ''}
+          ${slide.imageSrc ? `<img src="${slide.imageSrc}" alt="${slide.title}" class="tutorial-image">` : ""}
         `;
 
         // Удаляем класс выхода и добавляем вход
@@ -161,18 +181,18 @@ export class TutorialManager {
   private updateNavigation(): void {
     if (!this.modal) return;
 
-    const backBtn = this.modal.querySelector('.tutorial-back') as HTMLButtonElement;
-    const nextBtn = this.modal.querySelector('.tutorial-next') as HTMLButtonElement;
+    const backBtn = this.modal.querySelector(".tutorial-back") as HTMLButtonElement;
+    const nextBtn = this.modal.querySelector(".tutorial-next") as HTMLButtonElement;
 
     // Кнопка "Назад" - скрыта на первом слайде
     if (backBtn) {
-      backBtn.style.display = this.currentSlide === 0 ? 'none' : 'inline-block';
+      backBtn.style.display = this.currentSlide === 0 ? "none" : "inline-block";
     }
 
     // Кнопка "Далее" / "Начать работу"
     if (nextBtn) {
       const isLastSlide = this.currentSlide === this.slides.length - 1;
-      nextBtn.textContent = isLastSlide ? 'Начать работу' : 'Далее';
+      nextBtn.textContent = isLastSlide ? "Начать работу" : "Далее";
     }
   }
 
@@ -180,14 +200,16 @@ export class TutorialManager {
   private updateDots(): void {
     if (!this.modal) return;
 
-    const dotsContainer = this.modal.querySelector('.tutorial-dots');
+    const dotsContainer = this.modal.querySelector(".tutorial-dots");
     if (!dotsContainer) return;
 
     dotsContainer.innerHTML = this.slides
-      .map((_, index) => `
-        <span class="tutorial-dot ${index === this.currentSlide ? 'active' : ''}"></span>
-      `)
-      .join('');
+      .map(
+        (_, index) => `
+        <span class="tutorial-dot ${index === this.currentSlide ? "active" : ""}"></span>
+      `
+      )
+      .join("");
   }
 
   // Обработчики событий
@@ -195,23 +217,23 @@ export class TutorialManager {
     if (!this.modal) return;
 
     // Закрыть
-    const closeBtn = this.modal.querySelector('.tutorial-close');
-    closeBtn?.addEventListener('click', () => this.close());
+    const closeBtn = this.modal.querySelector(".tutorial-close");
+    closeBtn?.addEventListener("click", () => this.close());
 
     // Пропустить
-    const skipBtn = this.modal.querySelector('.tutorial-skip');
-    skipBtn?.addEventListener('click', () => this.close());
+    const skipBtn = this.modal.querySelector(".tutorial-skip");
+    skipBtn?.addEventListener("click", () => this.close());
 
     // Назад
-    const backBtn = this.modal.querySelector('.tutorial-back');
-    backBtn?.addEventListener('click', () => this.prevSlide());
+    const backBtn = this.modal.querySelector(".tutorial-back");
+    backBtn?.addEventListener("click", () => this.prevSlide());
 
     // Далее
-    const nextBtn = this.modal.querySelector('.tutorial-next');
-    nextBtn?.addEventListener('click', () => this.nextSlide());
+    const nextBtn = this.modal.querySelector(".tutorial-next");
+    nextBtn?.addEventListener("click", () => this.nextSlide());
 
     // Закрытие по клику на overlay
-    this.modal.addEventListener('click', (e) => {
+    this.modal.addEventListener("click", (e) => {
       if (e.target === this.modal) {
         this.close();
       }
@@ -219,7 +241,7 @@ export class TutorialManager {
 
     // Keyboard navigation
     this.keyboardHandler = this.handleKeyboard.bind(this);
-    document.addEventListener('keydown', this.keyboardHandler);
+    document.addEventListener("keydown", this.keyboardHandler);
   }
 
   // Keyboard navigation
@@ -227,13 +249,13 @@ export class TutorialManager {
     if (!this.modal) return;
 
     switch (e.key) {
-      case 'ArrowRight':
+      case "ArrowRight":
         this.nextSlide();
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         this.prevSlide();
         break;
-      case 'Escape':
+      case "Escape":
         this.close();
         break;
     }
@@ -243,7 +265,7 @@ export class TutorialManager {
   private nextSlide(): void {
     if (this.currentSlide < this.slides.length - 1) {
       this.currentSlide++;
-      this.renderSlide('next');
+      this.renderSlide("next");
     } else {
       // Последний слайд - закрыть
       this.close();
@@ -254,7 +276,7 @@ export class TutorialManager {
   private prevSlide(): void {
     if (this.currentSlide > 0) {
       this.currentSlide--;
-      this.renderSlide('prev');
+      this.renderSlide("prev");
     }
   }
 
@@ -266,11 +288,11 @@ export class TutorialManager {
     }
 
     // Отметить что инструкция была показана
-    localStorage.setItem(STORAGE_KEYS.TUTORIAL_SEEN, 'true');
+    localStorage.setItem(STORAGE_KEYS.TUTORIAL_SEEN, "true");
 
     // Удалить keyboard listener
     if (this.keyboardHandler) {
-      document.removeEventListener('keydown', this.keyboardHandler);
+      document.removeEventListener("keydown", this.keyboardHandler);
       this.keyboardHandler = null;
     }
   }

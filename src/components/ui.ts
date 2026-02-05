@@ -1,4 +1,4 @@
-import { ToastTimer } from "../constants";
+import { ToastTimer, Product } from "../constants";
 
 let toastTimers: ToastTimer[] = [];
 
@@ -155,6 +155,143 @@ export function showConfirm(
   cancelBtn.addEventListener("click", handleCancel);
   okBtn.addEventListener("click", handleOk);
   modal.addEventListener("click", handleBackdrop);
+}
+
+export function showEditModal(
+  product: Product,
+  onSave: (edits: {
+    name?: string;
+    originalPrice?: number;
+    originalQuantity?: number;
+    unit?: string;
+    largeUnit?: string;
+    factor?: number;
+  }) => void
+): void {
+  const modal = document.getElementById("editModal") as HTMLDivElement;
+  const nameInput = document.getElementById("editProductName") as HTMLInputElement;
+  const priceInput = document.getElementById("editPrice") as HTMLInputElement;
+  const quantityInput = document.getElementById("editQuantity") as HTMLInputElement;
+  const saveBtn = document.getElementById("editSave") as HTMLButtonElement;
+  const cancelBtn = document.getElementById("editCancel") as HTMLButtonElement;
+  const unitBtns = modal.querySelectorAll<HTMLButtonElement>(".edit-unit-selector .unit-btn");
+
+  // Текущая выбранная единица измерения
+  let selectedUnit = {
+    unit: product.unit,
+    large: product.largeUnit,
+    factor: product.factor,
+  };
+
+  // Заполняем поля текущими значениями
+  nameInput.value = product.name;
+  priceInput.value = product.originalPrice.toString();
+  quantityInput.value = product.originalQuantity.toString();
+
+  // Сбрасываем ошибки
+  nameInput.classList.remove("input-error");
+  priceInput.classList.remove("input-error");
+  quantityInput.classList.remove("input-error");
+
+  // Активируем текущую кнопку единицы измерения
+  unitBtns.forEach((btn) => {
+    const btnUnit = btn.dataset.unit;
+    if (btnUnit === product.unit) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  modal.classList.add("show");
+
+  // Обработчики
+  const cleanup = () => {
+    modal.classList.remove("show");
+    nameInput.removeEventListener("input", handleInput);
+    priceInput.removeEventListener("input", handleInput);
+    quantityInput.removeEventListener("input", handleInput);
+    cancelBtn.removeEventListener("click", handleCancel);
+    saveBtn.removeEventListener("click", handleSave);
+    modal.removeEventListener("click", handleBackdrop);
+    unitBtns.forEach((btn) => btn.removeEventListener("click", handleUnitClick));
+  };
+
+  const handleInput = (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    input.classList.remove("input-error");
+  };
+
+  const handleUnitClick = (e: Event) => {
+    const btn = e.target as HTMLButtonElement;
+    const unit = btn.dataset.unit;
+    const large = btn.dataset.large;
+    const factor = btn.dataset.factor;
+
+    if (unit && large && factor) {
+      unitBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedUnit = { unit, large, factor: parseInt(factor) };
+    }
+  };
+
+  const handleCancel = () => cleanup();
+
+  const handleSave = () => {
+    const newName = nameInput.value.trim() || product.name;
+    const newPrice = parseFloat(priceInput.value);
+    const newQuantity = parseFloat(quantityInput.value);
+
+    // Валидация
+    let hasError = false;
+
+    if (isNaN(newPrice) || newPrice <= 0) {
+      priceInput.classList.add("input-error");
+      showError("Введите корректную цену", priceInput);
+      hasError = true;
+    }
+
+    if (isNaN(newQuantity) || newQuantity <= 0) {
+      quantityInput.classList.add("input-error");
+      showError("Введите корректное количество", quantityInput);
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    // Колбэк с изменёнными данными (только изменившиеся поля)
+    const edits: {
+      name?: string;
+      originalPrice?: number;
+      originalQuantity?: number;
+      unit?: string;
+      largeUnit?: string;
+      factor?: number;
+    } = {};
+
+    if (newName !== product.name) edits.name = newName;
+    if (newPrice !== product.originalPrice) edits.originalPrice = newPrice;
+    if (newQuantity !== product.originalQuantity) edits.originalQuantity = newQuantity;
+    if (selectedUnit.unit !== product.unit) edits.unit = selectedUnit.unit;
+    if (selectedUnit.large !== product.largeUnit) edits.largeUnit = selectedUnit.large;
+    if (selectedUnit.factor !== product.factor) edits.factor = selectedUnit.factor;
+
+    onSave(edits);
+
+    cleanup();
+  };
+
+  const handleBackdrop = (e: MouseEvent) => {
+    if (e.target === modal) cleanup();
+  };
+
+  nameInput.addEventListener("input", handleInput);
+  priceInput.addEventListener("input", handleInput);
+  quantityInput.addEventListener("input", handleInput);
+  cancelBtn.addEventListener("click", handleCancel);
+  saveBtn.addEventListener("click", handleSave);
+  modal.addEventListener("click", handleBackdrop);
+  unitBtns.forEach((btn) => btn.addEventListener("click", handleUnitClick));
 }
 
 export function initSwipeHandlers(): void {

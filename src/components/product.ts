@@ -1,6 +1,6 @@
 import { Product, Unit } from "../constants";
 import { saveProducts, addProductTemplate } from "../services/storage";
-import { showUndoToast, initSwipeHandlers } from "./ui";
+import { showUndoToast, initSwipeHandlers, showEditModal } from "./ui";
 import { formatPrice, escapeHtml } from "../utils";
 
 export class ProductManager {
@@ -96,6 +96,94 @@ export class ProductManager {
       saveProducts(this.products);
       if (onDelete) {
         onDelete();
+      }
+    });
+  }
+
+  editProduct(
+    id: number,
+    edits: {
+      name?: string;
+      originalPrice?: number;
+      originalQuantity?: number;
+      unit?: string;
+      largeUnit?: string;
+      factor?: number;
+    }
+  ): boolean {
+    const product = this.products.find((p) => p.id === id);
+    if (!product) return false;
+
+    // Применяем только переданные поля
+    let needsRecalculation = false;
+
+    if (edits.name !== undefined) {
+      product.name = edits.name;
+    }
+    if (edits.originalPrice !== undefined) {
+      product.originalPrice = edits.originalPrice;
+      needsRecalculation = true;
+    }
+    if (edits.originalQuantity !== undefined) {
+      product.originalQuantity = edits.originalQuantity;
+      needsRecalculation = true;
+    }
+    if (edits.unit !== undefined) {
+      product.unit = edits.unit;
+    }
+    if (edits.largeUnit !== undefined) {
+      product.largeUnit = edits.largeUnit;
+    }
+    if (edits.factor !== undefined) {
+      product.factor = edits.factor;
+      needsRecalculation = true;
+    }
+
+    // Пересчитываем цены если изменились цена, количество или factor
+    if (needsRecalculation) {
+      const pricePerUnit = product.originalPrice / product.originalQuantity;
+      const pricePerLarge = pricePerUnit * product.factor;
+
+      product.pricePerUnit = pricePerUnit;
+      product.pricePerLarge = pricePerLarge;
+    }
+
+    saveProducts(this.products);
+
+    // Haptic feedback if available
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+
+    return true;
+  }
+
+  private openEditModal(productId: number): void {
+    const product = this.products.find((p) => p.id === productId);
+    if (!product) return;
+
+    showEditModal(product, (edits) => {
+      this.editProduct(productId, edits);
+      this.renderProducts();
+    });
+  }
+
+  setupProductEventListeners(): void {
+    // Используем делегирование событий для кликов на карточки
+    const productsList = document.getElementById("productsList") as HTMLDivElement;
+
+    productsList.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      const card = target.closest(".product-card") as HTMLDivElement;
+
+      // Игнорируем клик на кнопку удаления или если карточка в процессе свайпа
+      if (!card || target.closest(".delete-btn") || card.classList.contains("swiping")) {
+        return;
+      }
+
+      const productId = parseInt(card.dataset.id || "0");
+      if (productId > 0) {
+        this.openEditModal(productId);
       }
     });
   }

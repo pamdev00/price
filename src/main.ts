@@ -28,6 +28,9 @@ const productManager = new ProductManager(loadProducts());
 const sessionManager = new SessionManager();
 const tutorialManager = new TutorialManager();
 
+// Setup event listeners for product cards
+productManager.setupProductEventListeners();
+
 // App State
 let deferredPrompt: Event | null = null;
 
@@ -37,7 +40,7 @@ const priceInput = document.getElementById("price") as HTMLInputElement;
 const quantityInput = document.getElementById("quantity") as HTMLInputElement;
 const addBtn = document.getElementById("addProduct") as HTMLButtonElement;
 const clearAllBtn = document.getElementById("clearAll") as HTMLButtonElement;
-const unitBtns = document.querySelectorAll<HTMLButtonElement>(".unit-btn");
+const unitBtns = document.querySelectorAll<HTMLButtonElement>(".calc-card .unit-btn");
 const sortBtns = document.querySelectorAll<HTMLButtonElement>(".sort-btn");
 const installBanner = document.getElementById("installBanner") as HTMLDivElement;
 const installBtn = document.getElementById("installBtn") as HTMLButtonElement;
