@@ -8,6 +8,7 @@ import { ProductManager } from "./components/product";
 import { SessionManager } from "./components/session";
 import { showError, showConfirm, showInfoToast } from "./components/ui";
 import { AutocompleteManager } from "./components/autocomplete";
+import { TutorialManager } from "./components/tutorial";
 
 // Initialize VK Bridge
 bridge.send("VKWebAppInit");
@@ -25,6 +26,7 @@ initTheme();
 // Initialize managers
 const productManager = new ProductManager(loadProducts());
 const sessionManager = new SessionManager();
+const tutorialManager = new TutorialManager();
 
 // App State
 let deferredPrompt: Event | null = null;
@@ -45,6 +47,7 @@ const saveModal = document.getElementById("saveModal") as HTMLDivElement;
 const sessionNameInput = document.getElementById("sessionNameInput") as HTMLInputElement;
 const modalCancel = document.getElementById("modalCancel") as HTMLButtonElement;
 const modalConfirm = document.getElementById("modalConfirm") as HTMLButtonElement;
+const helpBtn = document.getElementById("helpBtn") as HTMLButtonElement;
 
 // Initialize autocomplete
 const autocomplete = new AutocompleteManager(productNameInput, (template) => {
@@ -230,6 +233,11 @@ function setupHistoryEventListeners(): void {
 saveSessionBtn.addEventListener("click", showSaveModal);
 modalCancel.addEventListener("click", hideSaveModal);
 modalConfirm.addEventListener("click", saveSession);
+
+// Help button - открывает инструкцию
+helpBtn.addEventListener("click", () => {
+  tutorialManager.show();
+});
 
 saveModal.addEventListener("click", (e) => {
   if (e.target === saveModal) hideSaveModal();

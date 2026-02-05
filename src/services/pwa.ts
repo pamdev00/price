@@ -28,6 +28,11 @@ function showUpdateToast(onUpdate: () => void): void {
 
 export function setupPWA(): void {
   // Service Worker registration with update detection
+  // Skip SW registration in dev mode when PWA is disabled
+  if (import.meta.env.DEV) {
+    return;
+  }
+
   if ("serviceWorker" in navigator) {
     let updateToastShown = false;
 

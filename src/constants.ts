@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   THEME: "theme",
   INSTALL_DISMISSED: "installDismissed",
   PRODUCT_TEMPLATES: "productTemplates",
+  TUTORIAL_SEEN: "tutorialSeen",
 } as const;
 
 // Types
@@ -45,4 +46,12 @@ export interface ProductTemplate {
   factor: number; // 1000 или 100
   usageCount: number; // Счётчик использований (для будущей сортировки)
   lastUsed: number; // Timestamp последнего использования
+}
+
+export interface TutorialSlide {
+  id: number;
+  title: string;
+  text: string;
+  emoji?: string;
+  imageSrc?: string;
 }

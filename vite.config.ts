@@ -13,7 +13,7 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: "inline",
+      injectRegister: "script",
       includeAssets: ["icons/*.png"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
@@ -63,7 +63,7 @@ export default defineConfig({
         ],
       },
       devOptions: {
-        enabled: true,
+        enabled: false,
       },
       manifest: {
         name: "ЦенаЗа1 — Калькулятор цены за единицу",

@@ -4,7 +4,11 @@ test.describe("ЦенаЗа1 — Основной функционал", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
     // Очищаем localStorage перед каждым тестом
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      // Предотвращаем автоматический показ tutorial
+      localStorage.setItem("tutorialSeen", "true");
+    });
     await page.reload();
   });
 
@@ -194,8 +198,14 @@ test.describe("ЦенаЗа1 — Основной функционал", () => {
 });
 
 test.describe("Переключение темы", () => {
-  test("должен переключать светлую тему", async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto("/");
+    // Предотвращаем автоматический показ tutorial
+    await page.evaluate(() => localStorage.setItem("tutorialSeen", "true"));
+    await page.reload();
+  });
+
+  test("должен переключать светлую тему", async ({ page }) => {
 
     await page.click('.theme-btn[data-theme="light"]');
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
@@ -212,7 +222,11 @@ test.describe("Переключение темы", () => {
 test.describe("Хранилище — переполнение localStorage", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      // Предотвращаем автоматический показ tutorial
+      localStorage.setItem("tutorialSeen", "true");
+    });
     await page.reload();
   });
 
@@ -344,7 +358,12 @@ test.describe("Хранилище — переполнение localStorage", ()
 test.describe("Автозаполнение товаров", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    await page.evaluate(() => localStorage.clear());
+    await page.evaluate(() => {
+      localStorage.clear();
+      // Предотвращаем автоматический показ tutorial
+      localStorage.setItem("tutorialSeen", "true");
+    });
+    await page.reload();
   });
 
   test("должен сохранять товар как шаблон при добавлении", async ({ page }) => {
@@ -604,5 +623,229 @@ test.describe("Автозаполнение товаров", () => {
 
     items = page.locator(".autocomplete-item");
     await expect(items).toHaveCount(2);
+  });
+});
+
+test.describe("Tutorial — Инструкция для пользователя", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+    // Очищаем localStorage перед каждым тестом
+    await page.evaluate(() => localStorage.clear());
+  });
+
+  test("должен показывать tutorial при первом запуске", async ({ page }) => {
+    await page.reload();
+
+    // Ждём появления модала
+    const modal = page.locator(".tutorial-modal");
+    await expect(modal).toBeVisible();
+
+    // Проверяем наличие класса .show
+    await expect(modal).toHaveClass(/show/);
+
+    // Проверяем первый слайд
+    await expect(page.locator(".tutorial-title")).toContainText("Добро пожаловать");
+    await expect(page.locator(".tutorial-emoji")).toContainText("👋");
+  });
+
+  test("не должен показывать tutorial при повторном запуске", async ({ page }) => {
+    // Устанавливаем флаг что tutorial просмотрен
+    await page.evaluate(() => {
+      localStorage.setItem("tutorialSeen", "true");
+    });
+    await page.reload();
+
+    // Модал не должен появляться
+    const modal = page.locator(".tutorial-modal");
+    await expect(modal).not.toBeVisible();
+  });
+
+  test("должен открываться по клику на кнопку помощи", async ({ page }) => {
+    // Устанавливаем флаг чтобы не показывался автоматически
+    await page.evaluate(() => {
+      localStorage.setItem("tutorialSeen", "true");
+    });
+    await page.reload();
+
+    // Кликаем на кнопку помощи
+    await page.click("#helpBtn");
+
+    // Проверяем что tutorial появился
+    const modal = page.locator(".tutorial-modal");
+    await expect(modal).toBeVisible();
+    await expect(modal).toHaveClass(/show/);
+  });
+
+  test("должен переключать слайды по кнопке Далее", async ({ page }) => {
+    await page.reload();
+    await expect(page.locator(".tutorial-modal")).toBeVisible();
+
+    // Кликаем Далее
+    await page.click(".tutorial-next");
+
+    // Проверяем что перешли на второй слайд
+    await expect(page.locator(".tutorial-title")).toContainText("Добавьте первый товар");
+    await expect(page.locator(".tutorial-emoji")).toContainText("📝");
+  });
+
+  test("должен показывать кнопку Назад начиная со второго слайда", async ({ page }) => {
+    await page.reload();
+    await expect(page.locator(".tutorial-modal")).toBeVisible();
+
+    // На первом слайде кнопка Назад скрыта
+    await expect(page.locator(".tutorial-back")).not.toBeVisible();
+
+    // Кликаем Далее
+    await page.click(".tutorial-next");
+
+    // Теперь кнопка Назад видна
+    await expect(page.locator(".tutorial-back")).toBeVisible();
+  });
+
+  test("должен переключаться назад по кнопке Назад", async ({ page }) => {
+    await page.reload();
+
+    // Переходим на второй слайд
+    await page.click(".tutorial-next");
+    await expect(page.locator(".tutorial-title")).toContainText("Добавьте первый товар");
+
+    // Возвращаемся назад
+    await page.click(".tutorial-back");
+    await expect(page.locator(".tutorial-title")).toContainText("Добро пожаловать");
+  });
+
+  test("должен закрываться по кнопке Пропустить", async ({ page }) => {
+    await page.reload();
+    await expect(page.locator(".tutorial-modal")).toBeVisible();
+
+    // Кликаем Пропустить
+    await page.click(".tutorial-skip");
+
+    // Модал должен исчезнуть
+    await expect(page.locator(".tutorial-modal")).not.toBeVisible();
+  });
+
+  test("должен закрываться по кнопке X", async ({ page }) => {
+    await page.reload();
+    await expect(page.locator(".tutorial-modal")).toBeVisible();
+
+    // Кликаем на кнопку закрытия
+    await page.click(".tutorial-close");
+
+    await expect(page.locator(".tutorial-modal")).not.toBeVisible();
+  });
+
+  test("должен закрываться по клику на overlay", async ({ page }) => {
+    await page.reload();
+    await expect(page.locator(".tutorial-modal")).toBeVisible();
+
+    // Кликаем на overlay (вне контента)
+    const modal = page.locator(".tutorial-modal");
+    await modal.click({ position: { x: 10, y: 10 } });
+
+    await expect(page.locator(".tutorial-modal")).not.toBeVisible();
+  });
+
+  test("не должен закрываться по клику внутри контента", async ({ page }) => {
+    await page.reload();
+    const modal = page.locator(".tutorial-modal");
+
+    // Кликаем внутри контента
+    await page.locator(".tutorial-content").click();
+
+    // Модал должен остаться видимым
+    await expect(modal).toBeVisible();
+  });
+
+  test("должен сохранять флаг tutorialSeen при закрытии", async ({ page }) => {
+    await page.reload();
+    await expect(page.locator(".tutorial-modal")).toBeVisible();
+
+    // Закрываем tutorial
+    await page.click(".tutorial-close");
+
+    // Проверяем что флаг сохранён
+    const tutorialSeen = await page.evaluate(() => {
+      return localStorage.getItem("tutorialSeen");
+    });
+    expect(tutorialSeen).toBe("true");
+  });
+
+  test("должен закрываться на последнем слайде по кнопке Начать работу", async ({ page }) => {
+    await page.reload();
+
+    // Переходим на последний слайд (5 кликов)
+    for (let i = 0; i < 4; i++) {
+      await page.click(".tutorial-next");
+      await page.waitForTimeout(100);
+    }
+
+    // Проверяем что текст кнопки изменился
+    await expect(page.locator(".tutorial-next")).toContainText("Начать работу");
+
+    // Кликаем для закрытия
+    await page.click(".tutorial-next");
+
+    // Модал должен закрыться
+    await expect(page.locator(".tutorial-modal")).not.toBeVisible();
+  });
+
+  test("должен показывать правильные индикаторы слайдов", async ({ page }) => {
+    await page.reload();
+
+    // Проверяем количество точек
+    const dots = page.locator(".tutorial-dot");
+    await expect(dots).toHaveCount(5);
+
+    // Первая точка должна быть активна
+    await expect(dots.nth(0)).toHaveClass(/active/);
+
+    // Переходим на второй слайд
+    await page.click(".tutorial-next");
+
+    // Теперь вторая точка активна
+    await expect(dots.nth(1)).toHaveClass(/active/);
+    await expect(dots.nth(0)).not.toHaveClass(/active/);
+  });
+
+  test("должен поддерживать навигацию с клавиатуры", async ({ page }) => {
+    await page.reload();
+
+    // Фокусируем модал для клавиатурной навигации
+    await page.locator(".tutorial-modal").click();
+
+    // Стрелка вправо - следующий слайд
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator(".tutorial-title")).toContainText("Добавьте первый товар");
+
+    // Стрелка влево - предыдущий слайд
+    await page.keyboard.press("ArrowLeft");
+    await expect(page.locator(".tutorial-title")).toContainText("Добро пожаловать");
+
+    // Escape - закрытие
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".tutorial-modal")).not.toBeVisible();
+  });
+
+  test("должен иметь правильный z-index (выше других модалов)", async ({ page }) => {
+    await page.reload();
+
+    // Проверяем что tutorial-modal имеет класс для высокого z-index
+    const modal = page.locator(".tutorial-modal");
+    await expect(modal).toHaveClass(/tutorial-modal/);
+  });
+
+  test("должен отображать HTML в тексте слайдов", async ({ page }) => {
+    await page.reload();
+
+    // Переходим на второй слайд (там есть HTML теги)
+    await page.click(".tutorial-next");
+
+    // Проверяем что <strong> теги отрендерились (их несколько)
+    const strongElements = page.locator(".tutorial-text strong");
+    await expect(strongElements).toHaveCount(3); // название, цену, количество
+
+    // Проверяем текст одного из них
+    await expect(strongElements.first()).toContainText("название");
   });
 });

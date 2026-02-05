@@ -37,9 +37,11 @@ export function initTheme(): void {
   // Theme button clicks
   const themeBtns = document.querySelectorAll<HTMLButtonElement>(".theme-btn");
   themeBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const theme = btn.dataset.theme as "light" | "dark";
-      setTheme(theme);
-    });
+    if (btn.dataset.theme) {
+      btn.addEventListener("click", () => {
+        const theme = btn.dataset.theme as "light" | "dark";
+        setTheme(theme);
+      });
+    }
   });
 }
