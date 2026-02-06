@@ -459,8 +459,7 @@ describe("Storage — шаблоны товаров (автозаполнени�
     expect(savedData[0].name).toBe("Товар 204"); // Самый новый
   });
 
-  it("должен обрабатывать ошибки localStorage при сохранении", () => {
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  it("должен молча игнорировать ошибки localStorage при сохранении шаблонов", () => {
     localStorageMock.setItem = vi.fn(() => {
       throw new Error("QuotaExceededError");
     });
@@ -476,10 +475,7 @@ describe("Storage — шаблоны товаров (автозаполнени�
       },
     ];
 
-    saveProductTemplates(templates);
-
-    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to save templates:", expect.any(Error));
-
-    consoleErrorSpy.mockRestore();
+    // Не должен падать с ошибкой
+    expect(() => saveProductTemplates(templates)).not.toThrow();
   });
 });

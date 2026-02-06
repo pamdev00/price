@@ -16,7 +16,9 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run typecheck && npm run lint && npm run format && npm run test:run && npm run test:e2e",
+    "predeploy": "npm run format:fix && npm run validate && npm run build"
   },
   "repository": {
     "type": "git",

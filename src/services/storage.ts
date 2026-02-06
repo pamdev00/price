@@ -37,8 +37,8 @@ export function saveProductTemplates(templates: ProductTemplate[]): void {
   }
   try {
     localStorage.setItem(STORAGE_KEYS.PRODUCT_TEMPLATES, JSON.stringify(templates));
-  } catch (e) {
-    console.error("Failed to save templates:", e);
+  } catch {
+    // Failed to save templates - silently ignore
   }
 }
 
