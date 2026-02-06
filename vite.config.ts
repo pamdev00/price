@@ -12,63 +12,23 @@ export default defineConfig({
   },
   plugins: [
     VitePWA({
-      registerType: "autoUpdate",
-      injectRegister: "script",
+      strategies: "injectManifest", // Используем кастомный SW
+      srcDir: "src",
+      filename: "sw.ts",
+      registerType: "prompt",
+      injectRegister: false, // Регистрируем вручную в pwa.ts
       includeAssets: ["icons/*.png"],
-      workbox: {
+      injectManifest: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "google-fonts-cache",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "gstatic-fonts-cache",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/unpkg\.com\/.*/i,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "unpkg-cache",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-        ],
       },
       devOptions: {
         enabled: false,
       },
       manifest: {
-        name: "ЦенаЗа1 — Калькулятор цены за единицу",
-        short_name: "ЦенаЗа1",
-        description: "Сравнивайте цены товаров за единицу измерения и находите лучшие предложения",
+        name: "Ð¦ÐµÐ½Ð°Ð—Ð°1 â€” ÐšÐ°Ð»ÑŒÐºÑƒÐ»ÑÑ‚Ð¾Ñ€ Ñ†ÐµÐ½Ñ‹ Ð·Ð° ÐµÐ´Ð¸Ð½Ð¸Ñ†Ñƒ",
+        short_name: "Ð¦ÐµÐ½Ð°Ð—Ð°1",
+        description:
+          "Ð¡Ñ€Ð°Ð²Ð½Ð¸Ð²Ð°Ð¹Ñ‚Ðµ Ñ†ÐµÐ½Ñ‹ Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² Ð·Ð° ÐµÐ´Ð¸Ð½Ð¸Ñ†Ñƒ Ð¸Ð·Ð¼ÐµÑ€ÐµÐ½Ð¸Ñ Ð¸ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚Ðµ Ð»ÑƒÑ‡ÑˆÐ¸Ðµ Ð¿Ñ€ÐµÐ´Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ",
         start_url: "./",
         scope: "./",
         display: "standalone",
